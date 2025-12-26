@@ -1,0 +1,7 @@
+/vendor
+/node_modules
+.env
+.DS_Store
+create_admin.php
+debug_login.php
+fix_password.php
