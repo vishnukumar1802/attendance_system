@@ -7,6 +7,13 @@ if (!isset($_SESSION['employee_logged_in']) || $_SESSION['employee_logged_in'] !
     header("Location: ../employee/login.php");
     exit;
 }
+// Notification Count
+$notif_count = 0;
+if (isset($pdo) && isset($_SESSION['employee_db_id'])) {
+    $n_stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
+    $n_stmt->execute([$_SESSION['employee_db_id']]);
+    $notif_count = $n_stmt->fetchColumn();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,15 +51,48 @@ if (!isset($_SESSION['employee_logged_in']) || $_SESSION['employee_logged_in'] !
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>"
+                                href="profile.php">
+                                <i class="bi bi-person-circle me-2"></i>My Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'education.php' ? 'active' : ''; ?>"
+                                href="education.php">
+                                <i class="bi bi-mortarboard me-2"></i>Education
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'attendance_history.php' ? 'active' : ''; ?>"
                                 href="attendance_history.php">
                                 <i class="bi bi-calendar-check me-2"></i>My Attendance
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'salary.php' ? 'active' : ''; ?>"
-                                href="salary.php">
-                                <i class="bi bi-wallet2 me-2"></i>My Salary
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'leave_request.php' ? 'active' : ''; ?>"
+                                href="leave_request.php">
+                                <i class="bi bi-calendar-minus me-2"></i>Leaves
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'tasks.php' ? 'active' : ''; ?>"
+                                href="tasks.php">
+                                <i class="bi bi-list-check me-2"></i>My Tasks
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'team.php' ? 'active' : ''; ?>"
+                                href="team.php">
+                                <i class="bi bi-people me-2"></i>My Team
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'notifications.php' ? 'active' : ''; ?>"
+                                href="notifications.php">
+                                <i class="bi bi-bell me-2"></i>Notifications
+                                <span id="notif-badge" class="badge bg-danger rounded-pill ms-2"
+                                    style="<?php echo ($notif_count > 0) ? '' : 'display:none;'; ?>"><?php echo $notif_count; ?></span>
                             </a>
                         </li>
                         <li class="nav-item mt-4">

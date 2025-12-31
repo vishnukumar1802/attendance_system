@@ -11,17 +11,56 @@ $error = '';
 // Check today's status
 $stmt = $pdo->prepare("SELECT * FROM attendance WHERE employee_id = :eid AND date = :date");
 $stmt->execute(['eid' => $emp_id, 'date' => $today]);
+// Check today's status
+$stmt = $pdo->prepare("SELECT * FROM attendance WHERE employee_id = :eid AND date = :date");
+$stmt->execute(['eid' => $emp_id, 'date' => $today]);
 $attendance = $stmt->fetch();
+
+// Check Holiday
+$h_stmt = $pdo->prepare("SELECT name FROM holidays WHERE date = ?");
+$h_stmt->execute([$today]);
+$holiday = $h_stmt->fetch();
+$is_holiday = (bool) $holiday;
+
+// --- V3: PROFILE CHECK ---
+$p_stmt = $pdo->prepare("SELECT profile_completed, temp_access_expiry FROM employee_profiles WHERE emp_id = ?");
+$p_stmt->execute([$emp_id]);
+$prof_data = $p_stmt->fetch();
+
+$is_profile_complete = ($prof_data && $prof_data['profile_completed'] == 1);
+$temp_access_valid = ($prof_data && $prof_data['temp_access_expiry'] && $prof_data['temp_access_expiry'] >= $today);
+
+$attendance_allowed = ($is_profile_complete || $temp_access_valid);
+// -------------------------
 
 // Handle Check In
 if (isset($_POST['check_in'])) {
-    if (!$attendance) {
-        $stmt = $pdo->prepare("INSERT INTO attendance (employee_id, date, check_in_time, status) VALUES (:eid, :date, NOW(), 'pending')");
-        if ($stmt->execute(['eid' => $emp_id, 'date' => $today])) {
-            header("Refresh:0"); // Reload to update state
-            exit;
-        } else {
-            $error = "Failed to check in.";
+
+    if (!$attendance_allowed) {
+        $error = "Access Denied. Complete your profile.";
+    } else {
+        // 0. Check Lock
+        $lock_stmt = $pdo->query("SELECT setting_value FROM settings WHERE setting_key = 'attendance_lock_date'");
+        if ($today <= $lock_date) {
+            $error = "Attendance for this date is locked by Admin.";
+        } elseif ($is_holiday) {
+            $error = "Today is a holiday (" . $holiday['name'] . "). No check-in required.";
+        } elseif ($attendance && $attendance['status'] == 'leave') {
+            $error = "You are on approved leave today.";
+        } elseif (!$attendance) {
+            // Late Check-in Logic (After 10:30 AM)
+            $current_time = time(); // timestamp
+            $late_threshold = strtotime(date('Y-m-d 10:30:00'));
+
+            $status = ($current_time > $late_threshold) ? 'half_day' : 'pending';
+
+            $stmt = $pdo->prepare("INSERT INTO attendance (employee_id, date, check_in_time, status) VALUES (:eid, :date, NOW(), :status)");
+            if ($stmt->execute(['eid' => $emp_id, 'date' => $today, 'status' => $status])) {
+                header("Refresh:0"); // Reload to update state
+                exit;
+            } else {
+                $error = "Failed to check in.";
+            }
         }
     }
 }
@@ -38,9 +77,20 @@ if (isset($_POST['submit_work'])) {
         } else {
             $pdo->beginTransaction();
             try {
-                // 1. Update Attendance
-                $upd = $pdo->prepare("UPDATE attendance SET check_out_time = NOW() WHERE id = :id");
-                $upd->execute(['id' => $attendance['id']]);
+                // 1. Calculate Status (Late In OR Early Out)
+                $check_out_time = time();
+                $early_threshold = strtotime(date('Y-m-d 16:00:00')); // 4:00 PM
+
+                $current_status = $attendance['status']; // could be 'half_day' from checkin
+                $final_status = 'present';
+
+                // If already half_day (due to late in) OR early out
+                if ($current_status == 'half_day' || $check_out_time < $early_threshold) {
+                    $final_status = 'half_day';
+                }
+
+                $upd = $pdo->prepare("UPDATE attendance SET check_out_time = NOW(), status = :st WHERE id = :id");
+                $upd->execute(['id' => $attendance['id'], 'st' => $final_status]);
 
                 // 2. Insert Work Submission
                 $ins = $pdo->prepare("INSERT INTO work_submissions (attendance_id, description, link) VALUES (:aid, :desc, :link)");
@@ -76,7 +126,44 @@ if (isset($_POST['submit_work'])) {
 <div class="row justify-content-center mt-5">
     <div class="col-md-8 col-lg-6">
 
-        <?php if (!$attendance): ?>
+
+        <?php if ($attendance && $attendance['status'] == 'leave'): ?>
+            <!-- STATE: ON LEAVE -->
+            <div class="attendance-action-card border-warning">
+                <div class="mb-4">
+                    <i class="bi bi-calendar2-x fs-1 text-warning"></i>
+                    <h3 class="mt-3 text-warning">On Leave</h3>
+                    <p class="text-muted">You are on approved leave today.</p>
+                </div>
+            </div>
+
+        <?php elseif ($is_holiday): ?>
+            <!-- STATE: HOLIDAY -->
+            <div class="attendance-action-card border-info">
+                <div class="mb-4">
+                    <i class="bi bi-calendar-event fs-1 text-info"></i>
+                    <h3 class="mt-3 text-info">Holiday</h3>
+                    <p class="text-muted">Today is <strong><?php echo htmlspecialchars($holiday['name']); ?></strong>.</p>
+                    <p class="small text-muted">Enjoy your day off!</p>
+                </div>
+            </div>
+
+        <?php elseif (!$attendance_allowed): ?>
+            <!-- STATE: BLOCKED -->
+            <div class="card border-danger shadow-sm mb-4">
+                <div class="card-body text-center p-5">
+                    <i class="bi bi-shield-lock-fill fs-1 text-danger"></i>
+                    <h3 class="mt-3 text-danger">Attendance Disabled</h3>
+                    <p class="text-muted">You must complete your profile to mark attendance.</p>
+                    <div class="d-flex justify-content-center gap-2 mt-4">
+                        <a href="profile.php" class="btn btn-outline-primary">Complete Profile</a>
+                        <a href="education.php" class="btn btn-outline-primary">Add Education</a>
+                        <a href="request_access.php" class="btn btn-warning">Request Temp Access</a>
+                    </div>
+                </div>
+            </div>
+
+        <?php elseif (!$attendance): ?>
             <!-- STATE: NOT CHECKED IN -->
             <div class="attendance-action-card">
                 <div class="mb-4">

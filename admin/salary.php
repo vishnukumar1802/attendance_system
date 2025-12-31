@@ -16,17 +16,30 @@ if (isset($_POST['generate'])) {
     $emps = $pdo->query("SELECT id, salary_per_day FROM employees WHERE status = 'active'")->fetchAll();
 
     foreach ($emps as $emp) {
-        // Count Present
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM attendance WHERE employee_id = :eid AND MONTH(date) = :m AND YEAR(date) = :y AND status = 'present'");
+        // 2a. Count Full Days (Present + Leave)
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM attendance WHERE employee_id = :eid AND MONTH(date) = :m AND YEAR(date) = :y AND (status = 'present' OR status = 'leave')");
         $stmt->execute(['eid' => $emp['id'], 'm' => $month, 'y' => $year]);
-        $present_days = $stmt->fetchColumn();
+        $full_days = $stmt->fetchColumn();
 
-        // Count Absent (Explicit)
+        // 2b. Count Half Days
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM attendance WHERE employee_id = :eid AND MONTH(date) = :m AND YEAR(date) = :y AND status = 'half_day'");
+        $stmt->execute(['eid' => $emp['id'], 'm' => $month, 'y' => $year]);
+        $half_days = $stmt->fetchColumn();
+
+        // 2c. Count Holidays in this month
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM holidays WHERE MONTH(date) = :m AND YEAR(date) = :y");
+        $stmt->execute(['m' => $month, 'y' => $year]);
+        $holiday_days = $stmt->fetchColumn();
+
+        // 2d. Count Absent
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM attendance WHERE employee_id = :eid AND MONTH(date) = :m AND YEAR(date) = :y AND status = 'absent'");
         $stmt->execute(['eid' => $emp['id'], 'm' => $month, 'y' => $year]);
         $absent_days = $stmt->fetchColumn();
 
-        $total_salary = $present_days * $emp['salary_per_day'];
+        // Total Paid Days
+        $effective_days = $full_days + $holiday_days + ($half_days * 0.5);
+
+        $total_salary = $effective_days * $emp['salary_per_day'];
 
         // Insert Record
         $ins = $pdo->prepare("INSERT INTO salary_records (employee_id, month, year, present_days, absent_days, total_salary) VALUES (:eid, :m, :y, :p, :a, :t)");
@@ -34,7 +47,9 @@ if (isset($_POST['generate'])) {
             'eid' => $emp['id'],
             'm' => $month,
             'y' => $year,
-            'p' => $present_days,
+            'p' => $effective_days, // Storing effective days in 'present_days' column for simplicity, or we should alter table? 
+            // The prompt says "Integrate...". The schema has 'present_days'. 
+            // Let's store Effective Days there so the UI shows the paid days count.
             'a' => $absent_days,
             't' => $total_salary
         ]);

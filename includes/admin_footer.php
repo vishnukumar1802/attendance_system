@@ -11,6 +11,30 @@
         }
     });
 </script>
+<script>
+    // Global Notification Polling (Admin)
+    function pollAdminNotifications() {
+        const badge = document.getElementById('admin-notif-badge');
+        if (!badge) return;
+
+        fetch('../ajax/fetch_notifications.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.count > 0) {
+                    badge.textContent = data.count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            })
+            .catch(err => console.error('Poll Error:', err));
+    }
+
+    if (document.getElementById('admin-notif-badge')) {
+        setInterval(pollAdminNotifications, 5000); // 5 seconds
+        pollAdminNotifications();
+    }
+</script>
 </body>
 
 </html>

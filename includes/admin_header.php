@@ -43,15 +43,82 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'employee_profiles.php' ? 'active' : ''; ?>"
+                                href="employee_profiles.php">
+                                <i class="bi bi-person-lines-fill me-2"></i>Profiles
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'temp_access.php' ? 'active' : ''; ?>"
+                                href="temp_access.php">
+                                <i class="bi bi-unlock me-2"></i>Access Reqs
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'attendance.php' ? 'active' : ''; ?>"
                                 href="attendance.php">
                                 <i class="bi bi-calendar-check me-2"></i>Attendance
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'bulk_attendance.php' ? 'active' : ''; ?>"
+                                href="bulk_attendance.php">
+                                <i class="bi bi-calendar-range me-2"></i>Bulk Attendance
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'missed_checkouts.php' ? 'active' : ''; ?>"
+                                href="missed_checkouts.php">
+                                <i class="bi bi-exclamation-triangle me-2"></i>Missed Checkout
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'leaves.php' ? 'active' : ''; ?>"
+                                href="leaves.php">
+                                <i class="bi bi-envelope-open me-2"></i>Leaves
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'tasks.php' ? 'active' : ''; ?>"
+                                href="tasks.php">
+                                <i class="bi bi-list-check me-2"></i>Tasks
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'teams.php' ? 'active' : ''; ?>"
+                                href="teams.php">
+                                <i class="bi bi-people-fill me-2"></i>Teams
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'salary.php' ? 'active' : ''; ?>"
                                 href="salary.php">
                                 <i class="bi bi-cash-stack me-2"></i>Salary & Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_holidays.php' ? 'active' : ''; ?>"
+                                href="manage_holidays.php">
+                                <i class="bi bi-calendar-event me-2"></i>Holidays
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>"
+                                href="settings.php">
+                                <i class="bi bi-gear me-2"></i>Settings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'messages.php' ? 'active' : ''; ?>"
+                                href="messages.php">
+                                <i class="bi bi-chat-dots me-2"></i>Messages
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="adminNotifLink">
+                                <i class="bi bi-bell me-2"></i>Notifications
+                                <span id="admin-notif-badge" class="badge bg-danger rounded-pill ms-2"
+                                    style="display:none;">0</span>
                             </a>
                         </li>
                         <?php if (isset($_SESSION['admin_role']) && $_SESSION['admin_role'] == 'super_admin'): ?>
