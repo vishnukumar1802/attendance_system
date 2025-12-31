@@ -9,7 +9,6 @@ $error = '';
 
 /**
  * 🔐 PERMISSION CHECK HELPER
- * Returns true if the logged-in user is a sub-admin of the specified team
  */
 function is_sub_admin($pdo, $team_id, $emp_id)
 {
@@ -21,16 +20,14 @@ function is_sub_admin($pdo, $team_id, $emp_id)
     return ($role === 'sub_admin');
 }
 
-/**
- * 🛠️ HANDLE ACTIONS (Add/Remove Member)
- */
+// ... (Existing Post Handlers for Add/Remove Members - KEEP AS IS)
+
 // 1. Add Member (Sub-Admin Only)
 if (isset($_POST['add_member'])) {
     $target_team = $_POST['team_id'];
     $target_emp = $_POST['new_emp_id'];
 
     if (is_sub_admin($pdo, $target_team, $emp_id)) {
-        // Validation: Is user already in team?
         $check = $pdo->prepare("SELECT id FROM team_members WHERE team_id = ? AND emp_id = ?");
         $check->execute([$target_team, $target_emp]);
 
@@ -45,7 +42,7 @@ if (isset($_POST['add_member'])) {
             $error = "User already in team.";
         }
     } else {
-        $error = "Unauthorized: You are not an admin of this team.";
+        $error = "Unauthorized.";
     }
 }
 
@@ -55,10 +52,6 @@ if (isset($_POST['remove_member'])) {
     $target_team = $_POST['team_id'];
 
     if (is_sub_admin($pdo, $target_team, $emp_id)) {
-        // Prevent removing self (optional, but good UX)
-        // Prevent removing other Sub-Admins? (Prompt says "Sub-admin can remove employees". 
-        // It doesn't explicitly forbid removing other sub-admins, but usually that's safer.
-        // Let's Check target role.
         $t_chk = $pdo->prepare("SELECT role, emp_id FROM team_members WHERE id = ?");
         $t_chk->execute([$target_mem_id]);
         $target = $t_chk->fetch();
@@ -79,6 +72,7 @@ if (isset($_POST['remove_member'])) {
     }
 }
 
+
 /**
  * 📥 FETCH DATA
  */
@@ -92,15 +86,44 @@ $stmt = $pdo->prepare("
 $stmt->execute([$emp_id]);
 $my_teams = $stmt->fetchAll();
 
-// Prepare list of ALL employees for the "Add Member" dropdown (Available to sub-admins)
-// We fetch this only if user is sub_admin of at least one team to save query, 
-// but simple enough to just fetch.
 $all_emps = $pdo->query("SELECT id, first_name, last_name, employee_id FROM employees WHERE status='active' ORDER BY first_name ASC")->fetchAll();
-
 ?>
 
+<style>
+    .chat-window {
+        height: 300px;
+        overflow-y: auto;
+        background: #f1f2f6;
+        border: 1px solid #ced4da;
+    }
+
+    .chat-msg {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+        padding: 5px 10px;
+        border-radius: 8px;
+        max-width: 80%;
+    }
+
+    .chat-msg.mine {
+        background: #d1e7dd;
+        margin-left: auto;
+    }
+
+    .chat-msg.others {
+        background: #fff;
+    }
+
+    .chat-sender {
+        font-size: 0.7rem;
+        font-weight: bold;
+        color: #6c757d;
+        display: block;
+    }
+</style>
+
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">My Teams</h1>
+    <h1 class="h2">My Teams & Chat</h1>
 </div>
 
 <?php if ($message): ?>
@@ -118,7 +141,7 @@ $all_emps = $pdo->query("SELECT id, first_name, last_name, employee_id FROM empl
         <?php
         $is_sub = ($team['my_role'] == 'sub_admin');
 
-        // Fetch Members
+        // Members list logic...
         $mstmt = $pdo->prepare("
                 SELECT tm.*, e.first_name, e.last_name, e.employee_id, ep.designation, ep.profile_photo 
                 FROM team_members tm 
@@ -131,91 +154,147 @@ $all_emps = $pdo->query("SELECT id, first_name, last_name, employee_id FROM empl
         $members = $mstmt->fetchAll();
         ?>
 
-        <div class="card shadow-sm mb-5">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                <h4 class="mb-0 text-primary">
-                    <i class="bi bi-people-fill me-2"></i><?php echo htmlspecialchars($team['name']); ?>
-                </h4>
-                <span class="badge <?php echo $is_sub ? 'bg-warning text-dark' : 'bg-secondary'; ?> fs-6">
-                    <?php echo ucfirst($team['my_role'] == 'sub_admin' ? 'Team Admin' : 'Member'); ?>
-                </span>
+        <div class="row mb-5">
+            <!-- Left: Members & Controls -->
+            <div class="col-lg-7 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-primary">
+                            <i class="bi bi-people-fill me-2"></i><?php echo htmlspecialchars($team['name']); ?>
+                        </h5>
+                        <span class="badge <?php echo $is_sub ? 'bg-warning text-dark' : 'bg-secondary'; ?>">
+                            <?php echo ucfirst($team['my_role'] == 'sub_admin' ? 'Team Admin' : 'Member'); ?>
+                        </span>
+                    </div>
+
+                    <!-- SUB-ADMIN: ADD MEMBER -->
+                    <?php if ($is_sub): ?>
+                        <div class="p-3 bg-light border-bottom">
+                            <form method="post" class="row g-2">
+                                <input type="hidden" name="team_id" value="<?php echo $team['id']; ?>">
+                                <div class="col-8">
+                                    <select name="new_emp_id" class="form-select form-select-sm" required>
+                                        <option value="">Select Employee to Add...</option>
+                                        <?php foreach ($all_emps as $e): ?>
+                                            <option value="<?php echo $e['id']; ?>">
+                                                <?php echo $e['first_name'] . ' ' . $e['last_name']; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-4">
+                                    <button type="submit" name="add_member" class="btn btn-sm btn-primary w-100">Add</button>
+                                </div>
+                            </form>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($members as $m): ?>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2"
+                                            style="width: 32px; height: 32px; font-weight:bold; font-size:12px;">
+                                            <?php echo substr($m['first_name'], 0, 1) . substr($m['last_name'], 0, 1); ?>
+                                        </div>
+                                        <div>
+                                            <span
+                                                class="fw-bold small"><?php echo htmlspecialchars($m['first_name'] . ' ' . $m['last_name']); ?></span>
+                                            <?php if ($m['role'] == 'sub_admin'): ?>
+                                                <span class="badge bg-warning text-dark ms-1" style="font-size:0.6rem;">Admin</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <?php if ($is_sub && $m['emp_id'] != $emp_id && $m['role'] != 'sub_admin'): ?>
+                                        <form method="post" onsubmit="return confirm('Remove?');">
+                                            <input type="hidden" name="team_id" value="<?php echo $team['id']; ?>">
+                                            <input type="hidden" name="mem_id" value="<?php echo $m['id']; ?>">
+                                            <button type="submit" name="remove_member"
+                                                class="btn btn-sm btn-outline-danger py-0 px-2">x</button>
+                                        </form>
+                                    <?php endif; ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- SUB-ADMIN CONTROLS: ADD MEMBER -->
-            <?php if ($is_sub): ?>
-                <div class="card-body border-bottom bg-light">
-                    <h6 class="fw-bold mb-3"><i class="bi bi-person-plus-fill me-2"></i>Add Member</h6>
-                    <form method="post" class="row g-2 align-items-center">
-                        <input type="hidden" name="team_id" value="<?php echo $team['id']; ?>">
-                        <div class="col-8 col-md-4">
-                            <select name="new_emp_id" class="form-select" required>
-                                <option value="">Select Employee...</option>
-                                <?php foreach ($all_emps as $e): ?>
-                                    <option value="<?php echo $e['id']; ?>">
-                                        <?php echo $e['first_name'] . ' ' . $e['last_name']; ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+            <!-- Right: Team Chat -->
+            <div class="col-lg-5">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <i class="bi bi-chat-quote-fill me-2 text-success"></i> Team Chat
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div id="chat-box-<?php echo $team['id']; ?>" class="chat-window mb-3 p-2 rounded">
+                            <div class="text-center text-muted small mt-4">Loading messages...</div>
                         </div>
-                        <div class="col-4">
-                            <button type="submit" name="add_member" class="btn btn-primary">Add</button>
-                        </div>
-                    </form>
+                        <form onsubmit="sendTeamMessage(event, <?php echo $team['id']; ?>)">
+                            <div class="input-group">
+                                <input type="text" id="msg-input-<?php echo $team['id']; ?>" class="form-control"
+                                    placeholder="Type..." autocomplete="off">
+                                <button class="btn btn-success" type="submit"><i class="bi bi-send"></i></button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            <?php endif; ?>
-
-            <div class="card-body p-0">
-                <ul class="list-group list-group-flush">
-                    <?php foreach ($members as $m): ?>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <!-- Avatar -->
-                                <div class="avatar-placeholder rounded-circle bg-light d-flex align-items-center justify-content-center me-3 text-secondary"
-                                    style="width: 45px; height: 45px; font-weight: bold;">
-                                    <?php
-                                    if (!empty($m['profile_photo'])) {
-                                        echo "<img src='../uploads/profile_photos/{$m['profile_photo']}' class='rounded-circle w-100 h-100' style='object-fit:cover'>";
-                                    } else {
-                                        echo substr($m['first_name'], 0, 1) . substr($m['last_name'], 0, 1);
-                                    }
-                                    ?>
-                                </div>
-
-                                <div>
-                                    <h6 class="mb-0 fw-bold">
-                                        <?php echo htmlspecialchars($m['first_name'] . ' ' . $m['last_name']); ?>
-                                        <?php if ($m['emp_id'] == $emp_id)
-                                            echo " (You)"; ?>
-                                    </h6>
-                                    <small class="text-muted"><?php echo htmlspecialchars($m['designation']); ?></small>
-                                </div>
-                            </div>
-
-                            <div class="d-flex align-items-center">
-                                <?php if ($m['role'] == 'sub_admin'): ?>
-                                    <span class="badge bg-warning text-dark me-3">Admin</span>
-                                <?php endif; ?>
-
-                                <!-- SUB-ADMIN ACTIONS: REMOVE -->
-                                <?php if ($is_sub && $m['emp_id'] != $emp_id && $m['role'] != 'sub_admin'): ?>
-                                    <form method="post"
-                                        onsubmit="return confirm('Remove <?php echo $m['first_name']; ?> from Group?');">
-                                        <input type="hidden" name="team_id" value="<?php echo $team['id']; ?>">
-                                        <input type="hidden" name="mem_id" value="<?php echo $m['id']; ?>">
-                                        <button type="submit" name="remove_member" class="btn btn-sm btn-outline-danger"
-                                            title="Remove Member">
-                                            <i class="bi bi-person-dash"></i>
-                                        </button>
-                                    </form>
-                                <?php endif; ?>
-                            </div>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
             </div>
         </div>
     <?php endforeach; ?>
 
 <?php endif; ?>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const myId = <?php echo $emp_id; ?>;
+    const teamLastIds = {}; // Track last msg ID per team
+
+    function sendTeamMessage(e, teamId) {
+        e.preventDefault();
+        const input = document.getElementById(`msg-input-${teamId}`);
+        const text = input.value.trim();
+        if (!text) return;
+
+        $.post('../ajax/send_team_message.php', { team_id: teamId, message: text }, function () {
+            input.value = '';
+            fetchTeamMessages(teamId); // Instant update
+        });
+    }
+
+    function fetchTeamMessages(teamId) {
+        if (!teamLastIds[teamId]) teamLastIds[teamId] = 0;
+
+        $.get('../ajax/fetch_team_messages.php', { team_id: teamId, last_id: teamLastIds[teamId] }, function (res) {
+            const data = (typeof res === 'string') ? JSON.parse(res) : res;
+            const box = document.getElementById(`chat-box-${teamId}`);
+
+            if (teamLastIds[teamId] === 0) box.innerHTML = ''; // Clear loading
+
+            if (data.messages && data.messages.length > 0) {
+                data.messages.forEach(msg => {
+                    teamLastIds[teamId] = msg.id;
+                    const isMine = (msg.sender_id == myId);
+                    const cls = isMine ? 'mine' : 'others'; // Use 'mine' and 'others' for classes
+                    const html = `
+                        <div class="chat-msg ${cls}">
+                            <span class="chat-sender">${isMine ? 'You' : msg.first_name}</span>
+                            ${msg.message}
+                        </div>
+                    `;
+                    box.innerHTML += html;
+                });
+                box.scrollTop = box.scrollHeight;
+            }
+        });
+    }
+
+    // Initialize & Poll
+    <?php foreach ($my_teams as $t): ?>
+        setInterval(() => fetchTeamMessages(<?php echo $t['id']; ?>), 3000);
+        fetchTeamMessages(<?php echo $t['id']; ?>);
+    <?php endforeach; ?>
+</script>
 
 <?php require_once '../includes/emp_footer.php'; ?>

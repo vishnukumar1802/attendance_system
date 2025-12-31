@@ -29,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['employee_db_id'] = $row['id'];
                 $_SESSION['employee_id'] = $row['employee_id'];
                 $_SESSION['employee_name'] = $row['first_name'];
+                $_SESSION['user_role'] = 'employee'; // For unified features
                 header("Location: dashboard.php");
                 exit;
             } else {

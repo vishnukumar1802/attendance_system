@@ -1,7 +1,14 @@
 <?php
 // ajax/fetch_messages.php
+error_reporting(0);
+ini_set('display_errors', 0);
+
+ob_start();
 require_once '../config/db.php';
-session_start();
+// db.php handles session_start check
+ob_clean();
+
+header('Content-Type: application/json');
 
 // Validations
 if (!isset($_SESSION['user_role'])) {
