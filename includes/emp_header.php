@@ -10,9 +10,15 @@ if (!isset($_SESSION['employee_logged_in']) || $_SESSION['employee_logged_in'] !
 // Notification Count
 $notif_count = 0;
 if (isset($pdo) && isset($_SESSION['employee_db_id'])) {
+    // 1. General Notifications
     $n_stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
     $n_stmt->execute([$_SESSION['employee_db_id']]);
-    $notif_count = $n_stmt->fetchColumn();
+    $notif_count += $n_stmt->fetchColumn();
+
+    // 2. Unread Messages (From Admin)
+    $m_stmt = $pdo->prepare("SELECT COUNT(*) FROM messages WHERE receiver_id = ? AND sender_role = 'admin' AND is_read = 0");
+    $m_stmt->execute([$_SESSION['employee_db_id']]);
+    $notif_count += $m_stmt->fetchColumn();
 }
 ?>
 <!DOCTYPE html>
@@ -24,14 +30,8 @@ if (isset($pdo) && isset($_SESSION['employee_db_id'])) {
     <title>Employee Portal - Attendance System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <style>
-        .sidebar {
-            background-color: #0f172a;
-        }
+    <link rel="stylesheet" href="../assets/css/style.css?v=<?php echo time(); ?>">
 
-        /* Consistent dark theme */
-    </style>
 </head>
 
 <body>
@@ -85,6 +85,18 @@ if (isset($pdo) && isset($_SESSION['employee_db_id'])) {
                             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'team.php' ? 'active' : ''; ?>"
                                 href="team.php">
                                 <i class="bi bi-people me-2"></i>My Team
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'email.php' ? 'active' : ''; ?>"
+                                href="email.php">
+                                <i class="bi bi-envelope me-2"></i>Email System
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'messages.php' ? 'active' : ''; ?>"
+                                href="messages.php">
+                                <i class="bi bi-chat-dots me-2"></i>My Chat
                             </a>
                         </li>
                         <li class="nav-item">

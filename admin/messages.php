@@ -5,7 +5,10 @@ require_once '../includes/admin_header.php';
 
 // Admin needs to select WHICH employee to chat with.
 // We need a list of employees.
-$emps = $pdo->query("SELECT id, first_name, last_name, employee_id, profile_photo FROM employees ORDER BY first_name ASC")->fetchAll();
+$emps = $pdo->query("SELECT e.id, e.first_name, e.last_name, e.employee_id, ep.profile_photo 
+                    FROM employees e 
+                    LEFT JOIN employee_profiles ep ON e.id = ep.emp_id 
+                    ORDER BY e.first_name ASC")->fetchAll();
 
 $current_chat_id = isset($_GET['emp_id']) ? (int) $_GET['emp_id'] : 0;
 ?>

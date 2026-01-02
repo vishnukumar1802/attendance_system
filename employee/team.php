@@ -233,9 +233,16 @@ $all_emps = $pdo->query("SELECT id, first_name, last_name, employee_id FROM empl
                         </div>
                         <form onsubmit="sendTeamMessage(event, <?php echo $team['id']; ?>)">
                             <div class="input-group">
+                                <label class="btn btn-outline-secondary" for="file-input-<?php echo $team['id']; ?>">
+                                    <i class="bi bi-paperclip"></i>
+                                </label>
+                                <input type="file" id="file-input-<?php echo $team['id']; ?>" class="d-none"
+                                    onchange="updateFileLabel(<?php echo $team['id']; ?>)">
                                 <input type="text" id="msg-input-<?php echo $team['id']; ?>" class="form-control"
                                     placeholder="Type..." autocomplete="off">
                                 <button class="btn btn-success" type="submit"><i class="bi bi-send"></i></button>
+                            </div>
+                            <div id="file-label-<?php echo $team['id']; ?>" class="small text-muted mt-1" style="display:none;">
                             </div>
                         </form>
                     </div>
@@ -251,15 +258,64 @@ $all_emps = $pdo->query("SELECT id, first_name, last_name, employee_id FROM empl
     const myId = <?php echo $emp_id; ?>;
     const teamLastIds = {}; // Track last msg ID per team
 
+    function updateFileLabel(teamId) {
+        const fileInput = document.getElementById(`file-input-${teamId}`);
+        const label = document.getElementById(`file-label-${teamId}`);
+        if (fileInput.files.length > 0) {
+            label.textContent = "Attached: " + fileInput.files[0].name;
+            label.style.display = 'block';
+        } else {
+            label.style.display = 'none';
+        }
+    }
+
+    function escapeHtml(text) {
+        if (!text) return "";
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function linkify(text) {
+        var urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlRegex, function(url) {
+            return '<a href="' + url + '" target="_blank">' + url + '</a>';
+        });
+    }
+
     function sendTeamMessage(e, teamId) {
         e.preventDefault();
         const input = document.getElementById(`msg-input-${teamId}`);
+        const fileInput = document.getElementById(`file-input-${teamId}`);
         const text = input.value.trim();
-        if (!text) return;
+        
+        if (!text && fileInput.files.length === 0) return;
 
-        $.post('../ajax/send_team_message.php', { team_id: teamId, message: text }, function () {
-            input.value = '';
-            fetchTeamMessages(teamId); // Instant update
+        const formData = new FormData();
+        formData.append('team_id', teamId);
+        formData.append('message', text);
+        if (fileInput.files.length > 0) {
+            formData.append('attachment', fileInput.files[0]);
+        }
+
+        $.ajax({
+            url: '../ajax/send_team_message.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function () {
+                input.value = '';
+                fileInput.value = ''; 
+                updateFileLabel(teamId);
+                fetchTeamMessages(teamId); 
+            },
+            error: function(err) {
+                console.error("Send failed", err);
+            }
         });
     }
 
@@ -276,11 +332,20 @@ $all_emps = $pdo->query("SELECT id, first_name, last_name, employee_id FROM empl
                 data.messages.forEach(msg => {
                     teamLastIds[teamId] = msg.id;
                     const isMine = (msg.sender_id == myId);
-                    const cls = isMine ? 'mine' : 'others'; // Use 'mine' and 'others' for classes
+                    const cls = isMine ? 'mine' : 'others'; 
+                    
+                    let msgContent = linkify(escapeHtml(msg.message));
+                    if (msg.attachment) {
+                        if (msgContent) msgContent += '<br>';
+                        msgContent += `<small><a href="../${msg.attachment}" class="text-decoration-none" download="${msg.attachment_name}" target="_blank">
+                            <i class="bi bi-paperclip"></i> ${msg.attachment_name}
+                        </a></small>`;
+                    }
+
                     const html = `
                         <div class="chat-msg ${cls}">
                             <span class="chat-sender">${isMine ? 'You' : msg.first_name}</span>
-                            ${msg.message}
+                            ${msgContent}
                         </div>
                     `;
                     box.innerHTML += html;

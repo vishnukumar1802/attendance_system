@@ -17,7 +17,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <title>Admin Dashboard - Attendance System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=<?php echo time(); ?>">
 </head>
 
 <body>
@@ -115,6 +115,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'email.php' ? 'active' : ''; ?>"
+                                href="email.php">
+                                <i class="bi bi-envelope me-2"></i>Email System
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#" id="adminNotifLink">
                                 <i class="bi bi-bell me-2"></i>Notifications
                                 <span id="admin-notif-badge" class="badge bg-danger rounded-pill ms-2"
@@ -139,4 +145,30 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             </nav>
 
             <!-- Main Content -->
+            <?php
+            // Admin Notification Logic
+            $admin_notif_count = 0;
+            if (isset($pdo) && isset($_SESSION['admin_id'])) {
+                // 1. General Notifications
+                $n_stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = 0 AND is_read = 0"); // 0 for Admin
+                $n_stmt->execute();
+                $admin_notif_count += $n_stmt->fetchColumn();
+
+                // 2. Unread Messages (From Employees)
+                $m_stmt = $pdo->prepare("SELECT COUNT(*) FROM messages WHERE receiver_id = ? AND sender_role = 'employee' AND is_read = 0");
+                $m_stmt->execute([$_SESSION['admin_id']]);
+                $admin_notif_count += $m_stmt->fetchColumn();
+            }
+            ?>
+            <script>
+                // Update Admin Badge
+                document.addEventListener('DOMContentLoaded', function () {
+                    const badge = document.getElementById('admin-notif-badge');
+                    const count = <?php echo $admin_notif_count; ?>;
+                    if (count > 0) {
+                        badge.innerText = count;
+                        badge.style.display = 'inline-block';
+                    }
+                });
+            </script>
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">

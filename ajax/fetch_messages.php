@@ -16,7 +16,7 @@ if (!isset($_SESSION['user_role'])) {
     exit(json_encode(['error' => 'Unauthorized']));
 }
 
-$my_id = ($SESSION['user_role'] == 'admin') ? $_SESSION['admin_id'] : $_SESSION['employee_db_id'];
+$my_id = ($_SESSION['user_role'] == 'admin') ? $_SESSION['admin_id'] : $_SESSION['employee_db_id'];
 $my_role = $_SESSION['user_role']; // 'admin' or 'employee'
 
 // Parameters

@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $team_id = isset($_POST['team_id']) ? (int) $_POST['team_id'] : 0;
     $message = isset($_POST['message']) ? trim($_POST['message']) : '';
 
-    if ($team_id <= 0 || empty($message)) {
+    if ($team_id <= 0 || (empty($message) && empty($_FILES['attachment']['name']))) {
         echo json_encode(['status' => 'error', 'message' => 'Invalid data']);
         exit;
     }
@@ -35,14 +35,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $chk->execute([$team_id, $sender_id]);
 
         if ($chk->rowCount() > 0) {
-            $stmt = $pdo->prepare("INSERT INTO team_chat (team_id, sender_id, message) VALUES (?, ?, ?)");
-            $stmt->execute([$team_id, $sender_id, $message]);
+            $attachment_path = null;
+            $attachment_name = null;
+
+            // Handle File Upload
+            if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = '../uploads/chat_attachments/';
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                }
+
+                $file_name = basename($_FILES['attachment']['name']);
+                $target_file = $upload_dir . uniqid() . '_' . $file_name;
+
+                // Allow all file types for now as per requirement "send the document"
+                // But maybe block dangerous executables?
+                $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                $blocked = ['php', 'exe', 'bat', 'sh'];
+
+                if (!in_array($ext, $blocked)) {
+                    if (move_uploaded_file($_FILES['attachment']['tmp_name'], $target_file)) {
+                        $attachment_path = $target_file; // Store relative path or full path? 
+                        // It's better to store path relative to root or consistently. 
+                        // The existing code uses '../ajax' so let's stick to relative for now or just the filename?
+                        // Let's store 'uploads/chat_attachments/...' (relative to project root)
+                        $attachment_path = 'uploads/chat_attachments/' . basename($target_file);
+                        $attachment_name = $file_name;
+                    }
+                }
+            }
+
+            $stmt = $pdo->prepare("INSERT INTO team_chat (team_id, sender_id, message, attachment, attachment_name) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$team_id, $sender_id, $message, $attachment_path, $attachment_name]);
             echo json_encode(['status' => 'success']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Not a member']);
         }
     } catch (Exception $e) {
-        echo json_encode(['status' => 'error', 'message' => 'DB Error']);
+        echo json_encode(['status' => 'error', 'message' => 'DB Error: ' . $e->getMessage()]);
     }
 }
 ?>
