@@ -185,7 +185,10 @@ $holiday_map = $hc_stmt->fetchAll(PDO::FETCH_KEY_PAIR);
                 <div class="fs-1 text-danger mb-2"><i class="bi bi-shield-lock"></i></div>
                 <h3 class="fw-bold">Access Denied</h3>
                 <p class="text-muted small">Complete Profile to Check In</p>
-                <a href="profile.php" class="btn btn-sm btn-outline-danger mt-2">Go to Profile</a>
+                <div class="d-grid gap-2 mt-3">
+                    <a href="profile.php" class="btn btn-outline-danger">Complete Profile</a>
+                    <a href="request_access.php" class="btn btn-warning text-white">Request Temp Access</a>
+                </div>
             </div>
         <?php elseif (!$attendance): ?>
             <div class="saas-card h-100 text-center p-4 d-flex flex-column justify-content-center">
