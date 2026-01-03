@@ -143,7 +143,7 @@ $all_emps = $pdo->query("SELECT id, first_name, last_name, employee_id FROM empl
 
         // Members list logic...
         $mstmt = $pdo->prepare("
-                SELECT tm.*, e.first_name, e.last_name, e.employee_id, ep.designation, ep.profile_photo 
+                SELECT tm.*, e.first_name, e.last_name, e.employee_id, e.designation, ep.profile_photo 
                 FROM team_members tm 
                 JOIN employees e ON tm.emp_id = e.id 
                 LEFT JOIN employee_profiles ep ON e.id = ep.emp_id
@@ -281,7 +281,7 @@ $all_emps = $pdo->query("SELECT id, first_name, last_name, employee_id FROM empl
 
     function linkify(text) {
         var urlRegex = /(https?:\/\/[^\s]+)/g;
-        return text.replace(urlRegex, function(url) {
+        return text.replace(urlRegex, function (url) {
             return '<a href="' + url + '" target="_blank">' + url + '</a>';
         });
     }
@@ -291,7 +291,7 @@ $all_emps = $pdo->query("SELECT id, first_name, last_name, employee_id FROM empl
         const input = document.getElementById(`msg-input-${teamId}`);
         const fileInput = document.getElementById(`file-input-${teamId}`);
         const text = input.value.trim();
-        
+
         if (!text && fileInput.files.length === 0) return;
 
         const formData = new FormData();
@@ -309,11 +309,11 @@ $all_emps = $pdo->query("SELECT id, first_name, last_name, employee_id FROM empl
             contentType: false,
             success: function () {
                 input.value = '';
-                fileInput.value = ''; 
+                fileInput.value = '';
                 updateFileLabel(teamId);
-                fetchTeamMessages(teamId); 
+                fetchTeamMessages(teamId);
             },
-            error: function(err) {
+            error: function (err) {
                 console.error("Send failed", err);
             }
         });
@@ -332,8 +332,8 @@ $all_emps = $pdo->query("SELECT id, first_name, last_name, employee_id FROM empl
                 data.messages.forEach(msg => {
                     teamLastIds[teamId] = msg.id;
                     const isMine = (msg.sender_id == myId);
-                    const cls = isMine ? 'mine' : 'others'; 
-                    
+                    const cls = isMine ? 'mine' : 'others';
+
                     let msgContent = linkify(escapeHtml(msg.message));
                     if (msg.attachment) {
                         if (msgContent) msgContent += '<br>';

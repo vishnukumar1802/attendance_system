@@ -109,11 +109,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'messages.php' ? 'active' : ''; ?>"
-                                href="messages.php">
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'chat.php' ? 'active' : ''; ?>"
+                                href="chat.php">
                                 <i class="bi bi-chat-dots me-2"></i>Messages
                             </a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'email.php' ? 'active' : ''; ?>"
                                 href="email.php">
@@ -154,10 +155,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 $n_stmt->execute();
                 $admin_notif_count += $n_stmt->fetchColumn();
 
-                // 2. Unread Messages (From Employees)
-                $m_stmt = $pdo->prepare("SELECT COUNT(*) FROM messages WHERE receiver_id = ? AND sender_role = 'employee' AND is_read = 0");
-                $m_stmt->execute([$_SESSION['admin_id']]);
-                $admin_notif_count += $m_stmt->fetchColumn();
+                // 2. Unread Messages (DISABLED)
+                // $m_stmt = $pdo->prepare("SELECT COUNT(*) FROM messages WHERE receiver_id = ? AND sender_role = 'employee' AND is_read = 0");
+                // $m_stmt->execute([$_SESSION['admin_id']]);
+                // $admin_notif_count += $m_stmt->fetchColumn();
             }
             ?>
             <script>

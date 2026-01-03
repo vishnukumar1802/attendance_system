@@ -14,8 +14,14 @@ if (!isset($_SESSION['user_role'])) {
     exit(json_encode(['count' => 0, 'notifications' => []]));
 }
 
-$my_id = ($_SESSION['user_role'] == 'admin') ? $_SESSION['admin_id'] : $_SESSION['employee_db_id']; // admin table has 'id', employees 'id'? 
-// Wait, admin session usually is 'admin_id'. Employee is 'employee_db_id'.
+if (isset($_SESSION['admin_id'])) {
+    $my_id = $_SESSION['admin_id'];
+} elseif (isset($_SESSION['employee_db_id'])) {
+    $my_id = $_SESSION['employee_db_id'];
+} else {
+    exit(json_encode(['count' => 0, 'notifications' => []]));
+}
+session_write_close();
 // Need to ensure notifications table uses these IDs correctly.
 // Install v2 said: user_id INT. 
 

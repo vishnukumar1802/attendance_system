@@ -15,7 +15,7 @@
     function pollNotifications() {
         if (!document.getElementById('notif-badge')) return;
 
-        // Use relative path - assume we are in a subdir like /employee/
+        // Use absolute path to avoid directory depth issues
         fetch('../ajax/fetch_notifications.php')
             .then(response => response.json())
             .then(data => {

@@ -15,10 +15,10 @@ if (isset($pdo) && isset($_SESSION['employee_db_id'])) {
     $n_stmt->execute([$_SESSION['employee_db_id']]);
     $notif_count += $n_stmt->fetchColumn();
 
-    // 2. Unread Messages (From Admin)
-    $m_stmt = $pdo->prepare("SELECT COUNT(*) FROM messages WHERE receiver_id = ? AND sender_role = 'admin' AND is_read = 0");
-    $m_stmt->execute([$_SESSION['employee_db_id']]);
-    $notif_count += $m_stmt->fetchColumn();
+    // 2. Unread Messages (DISABLED)
+    // $m_stmt = $pdo->prepare("SELECT COUNT(*) FROM messages WHERE receiver_id = ? AND sender_role = 'admin' AND is_read = 0");
+    // $m_stmt->execute([$_SESSION['employee_db_id']]);
+    // $notif_count += $m_stmt->fetchColumn();
 }
 ?>
 <!DOCTYPE html>
@@ -94,11 +94,12 @@ if (isset($pdo) && isset($_SESSION['employee_db_id'])) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'messages.php' ? 'active' : ''; ?>"
-                                href="messages.php">
-                                <i class="bi bi-chat-dots me-2"></i>My Chat
+                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'chat.php' ? 'active' : ''; ?>"
+                                href="chat.php">
+                                <i class="bi bi-chat-dots me-2"></i>Messages
                             </a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'notifications.php' ? 'active' : ''; ?>"
                                 href="notifications.php">
