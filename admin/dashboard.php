@@ -30,46 +30,49 @@ $stmt = $pdo->query("
 $recent_activities = $stmt->fetchAll();
 ?>
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Dashboard</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
-            <span class="btn btn-sm btn-outline-secondary disabled"><?php echo date('l, F j, Y'); ?></span>
-        </div>
-    </div>
-</div>
-
 <!-- 1. SUMMARY KPI CARDS -->
 <div class="row g-4 mb-4">
     <div class="col-md-3">
-        <div class="card shadow-sm border-start border-4 border-primary h-100">
-            <div class="card-body">
-                <div class="text-muted small text-uppercase fw-bold">Total Employees</div>
-                <h2 class="display-6 fw-bold text-primary mb-0" id="kpi-total">-</h2>
+        <div class="saas-card h-100 d-flex align-items-center">
+            <div class="rounded-circle p-3 bg-indigo-50 text-primary me-3 bg-primary-subtle">
+                <i class="bi bi-people-fill fs-4"></i>
+            </div>
+            <div>
+                <p class="text-muted small text-uppercase fw-bold mb-1">Total Employees</p>
+                <h2 class="display-6 fw-bold text-dark mb-0" id="kpi-total">-</h2>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card shadow-sm border-start border-4 border-success h-100">
-            <div class="card-body">
-                <div class="text-muted small text-uppercase fw-bold">Present Today</div>
-                <h2 class="display-6 fw-bold text-success mb-0" id="kpi-present">-</h2>
+        <div class="saas-card h-100 d-flex align-items-center">
+            <div class="rounded-circle p-3 bg-green-50 text-success me-3 bg-success-subtle">
+                <i class="bi bi-check-circle-fill fs-4"></i>
+            </div>
+            <div>
+                <p class="text-muted small text-uppercase fw-bold mb-1">Present Today</p>
+                <h2 class="display-6 fw-bold text-dark mb-0" id="kpi-present">-</h2>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card shadow-sm border-start border-4 border-danger h-100">
-            <div class="card-body">
-                <div class="text-muted small text-uppercase fw-bold">Absent Today</div>
-                <h2 class="display-6 fw-bold text-danger mb-0" id="kpi-absent">-</h2>
+        <div class="saas-card h-100 d-flex align-items-center">
+            <div class="rounded-circle p-3 bg-red-50 text-danger me-3 bg-danger-subtle">
+                <i class="bi bi-x-circle-fill fs-4"></i>
+            </div>
+            <div>
+                <p class="text-muted small text-uppercase fw-bold mb-1">Absent Today</p>
+                <h2 class="display-6 fw-bold text-dark mb-0" id="kpi-absent">-</h2>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card shadow-sm border-start border-4 border-info h-100">
-            <div class="card-body">
-                <div class="text-muted small text-uppercase fw-bold">WFH / On Leave</div>
-                <h2 class="display-6 fw-bold text-info mb-0" id="kpi-wfh">-</h2>
+        <div class="saas-card h-100 d-flex align-items-center">
+            <div class="rounded-circle p-3 bg-blue-50 text-info me-3 bg-info-subtle">
+                <i class="bi bi-laptop-fill fs-4"></i>
+            </div>
+            <div>
+                <p class="text-muted small text-uppercase fw-bold mb-1">WFH / On Leave</p>
+                <h2 class="display-6 fw-bold text-dark mb-0" id="kpi-wfh">-</h2>
             </div>
         </div>
     </div>
@@ -79,24 +82,23 @@ $recent_activities = $stmt->fetchAll();
 <div class="row mb-4">
     <!-- Productivity Chart -->
     <div class="col-lg-8 mb-4 mb-lg-0">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-bar-chart-line me-2"></i>Productivity vs Presence (Top 10 Active)</span>
+        <div class="saas-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-bar-chart-line text-primary me-2"></i>Productivity
+                </h5>
                 <span class="badge bg-light text-dark border">Last 30 Days</span>
             </div>
-            <div class="card-body">
+            <div>
                 <canvas id="productivityChart" height="120"></canvas>
             </div>
         </div>
     </div>
     <!-- Work Distribution -->
     <div class="col-lg-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white fw-bold">
-                <i class="bi bi-pie-chart me-2"></i>Work Type Distribution
-            </div>
-            <div class="card-body d-flex align-items-center justify-content-center">
-                <div style="width: 100%; max-width: 300px;">
+        <div class="saas-card h-100">
+            <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-pie-chart text-primary me-2"></i>Work Type</h5>
+            <div class="d-flex align-items-center justify-content-center">
+                <div style="width: 100%; max-width: 280px;">
                     <canvas id="workDistChart"></canvas>
                 </div>
             </div>
@@ -108,15 +110,16 @@ $recent_activities = $stmt->fetchAll();
 <div class="row mb-4">
     <!-- Risk Monitor -->
     <div class="col-lg-7 mb-4 mb-lg-0">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white fw-bold text-danger">
-                <i class="bi bi-exclamation-triangle me-2"></i>Attendance Risk Monitor
+        <div class="saas-card h-100 p-0 overflow-hidden">
+            <div class="p-4 border-bottom bg-light bg-opacity-50">
+                <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Attendance Risk
+                    Monitor</h5>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
+                    <thead class="bg-light text-muted small text-uppercase">
                         <tr>
-                            <th>Employee</th>
+                            <th class="ps-4">Employee</th>
                             <th>Risk Score</th>
                             <th>Level</th>
                             <th>Key Issues</th>
@@ -134,13 +137,13 @@ $recent_activities = $stmt->fetchAll();
 
     <!-- Behavioral Alerts -->
     <div class="col-lg-5">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white fw-bold text-primary">
-                <i class="bi bi-bell me-2"></i>Behavioral Alerts
+        <div class="saas-card h-100 p-0 overflow-hidden">
+            <div class="p-4 border-bottom bg-light bg-opacity-50">
+                <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-bell me-2"></i>Behavioral Alerts</h5>
             </div>
-            <div class="card-body p-0">
+            <div class="p-0">
                 <ul class="list-group list-group-flush" id="alerts-list">
-                    <li class="list-group-item text-muted text-center py-3">Scanning patterns...</li>
+                    <li class="list-group-item text-muted text-center py-4 border-0">Scanning patterns...</li>
                 </ul>
             </div>
         </div>
@@ -148,73 +151,78 @@ $recent_activities = $stmt->fetchAll();
 </div>
 
 <!-- 4. TEAM ANALYTICS -->
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-white fw-bold">
-        <i class="bi bi-people me-2"></i>Team Performance (Attendance Consistency)
-    </div>
-    <div class="card-body" id="team-perf-container">
+<div class="saas-card mb-4">
+    <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-people text-primary me-2"></i>Team Performance</h5>
+    <div id="team-perf-container">
         <!-- JS will populate -->
     </div>
 </div>
 
 <!-- 5. RECENT ACTIVITY TABLE -->
-<h3 class="h4 mb-3">Recent Activity Log</h3>
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-custom mb-0">
-                <thead>
-                    <tr>
-                        <th scope="col">Employee</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Check In</th>
-                        <th scope="col">Check Out</th>
-                        <th scope="col">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (count($recent_activities) > 0): ?>
-                        <?php foreach ($recent_activities as $activity): ?>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="ms-2">
-                                            <h6 class="mb-0">
-                                                <?php echo htmlspecialchars($activity['first_name'] . ' ' . $activity['last_name']); ?>
-                                            </h6>
-                                            <small
-                                                class="text-muted"><?php echo htmlspecialchars($activity['employee_id']); ?></small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><?php echo date('M j, Y', strtotime($activity['date'])); ?></td>
-                                <td><?php echo $activity['check_in_time'] ? date('h:i A', strtotime($activity['check_in_time'])) : '-'; ?>
-                                </td>
-                                <td><?php echo $activity['check_out_time'] ? date('h:i A', strtotime($activity['check_out_time'])) : '-'; ?>
-                                </td>
-                                <td>
-                                    <?php
-                                    $statusClass = match ($activity['status']) {
-                                        'present' => 'status-present',
-                                        'absent' => 'status-absent',
-                                        'pending' => 'status-pending',
-                                        default => 'status-pending'
-                                    };
-                                    ?>
-                                    <span class="status-badge <?php echo $statusClass; ?>">
-                                        <?php echo ucfirst($activity['status']); ?>
-                                    </span>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+<div class="saas-card mb-4 p-0 overflow-hidden">
+    <div class="p-4 border-bottom d-flex justify-content-between align-items-center bg-light bg-opacity-50">
+        <h5 class="fw-bold mb-0 text-dark">Recent Activity Log</h5>
+        <a href="attendance.php" class="btn btn-sm btn-saas-outline">View All</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light text-muted small text-uppercase">
+                <tr>
+                    <th class="ps-4">Employee</th>
+                    <th>Date</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (count($recent_activities) > 0): ?>
+                    <?php foreach ($recent_activities as $activity): ?>
                         <tr>
-                            <td colspan="5" class="text-center py-4">No recent activity found.</td>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar bg-light text-primary rounded-circle small fw-bold d-flex align-items-center justify-content-center me-2"
+                                        style="width: 32px; height: 32px;">
+                                        <?php echo substr($activity['first_name'], 0, 1) . substr($activity['last_name'], 0, 1); ?>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 text-dark small fw-bold">
+                                            <?php echo htmlspecialchars($activity['first_name'] . ' ' . $activity['last_name']); ?>
+                                        </h6>
+                                        <small class="text-muted"
+                                            style="font-size: 0.75rem;"><?php echo htmlspecialchars($activity['employee_id']); ?></small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-muted small"><?php echo date('M j, Y', strtotime($activity['date'])); ?></td>
+                            <td class="text-dark small fw-medium">
+                                <?php echo $activity['check_in_time'] ? date('h:i A', strtotime($activity['check_in_time'])) : '-'; ?>
+                            </td>
+                            <td class="text-dark small fw-medium">
+                                <?php echo $activity['check_out_time'] ? date('h:i A', strtotime($activity['check_out_time'])) : '-'; ?>
+                            </td>
+                            <td>
+                                <?php
+                                $statusClass = match ($activity['status']) {
+                                    'present' => 'badge-present',
+                                    'absent' => 'badge-absent',
+                                    'pending' => 'badge-half', // using half style for pending
+                                    default => 'badge-half'
+                                };
+                                ?>
+                                <span class="badge-saas <?php echo $statusClass; ?>">
+                                    <?php echo ucfirst($activity['status']); ?>
+                                </span>
+                            </td>
                         </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">No recent activity found.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
 </div>
 

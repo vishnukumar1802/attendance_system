@@ -12,7 +12,7 @@ if (isset($_POST['create_task'])) {
     $emp_id = $_POST['assigned_to'];
     $cat = $_POST['category'];
     $due = $_POST['due_date'];
-    $by = $_SESSION['admin_db_id']; // Assuming admin_db_id is set in login
+    $by = $_SESSION['admin_id']; // Fixed: Use correct session key from login.php
 
     if ($due < date('Y-m-d')) {
         $message = "Error: Due date cannot be in the past.";

@@ -1,0 +1,223 @@
+/* assets/css/saas-theme.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* Brand Colors - Modern Indigo/Violet SaaS Vibe */
+    --primary: #4F46E5;
+    --primary-hover: #4338CA;
+    --primary-light: #EEF2FF;
+    --secondary: #64748B;
+    --success: #10B981;
+    --danger: #EF4444;
+    --warning: #F59E0B;
+    
+    /* Neutral / Surfaces */
+    --bg-body: #F3F4F6;
+    --bg-surface: #FFFFFF;
+    --bg-sidebar: #1E293B; /* Dark sidebar for SaaS look */
+    --text-main: #111827;
+    --text-muted: #6B7280;
+    --border-color: #E5E7EB;
+    
+    /* UI Elements */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    /* Layout */
+    --sidebar-width: 260px;
+    --header-height: 64px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    color: var(--text-main);
+    letter-spacing: -0.025em;
+}
+
+/* --- Components --- */
+
+/* Card */
+.saas-card {
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    padding: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.saas-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Buttons */
+.btn-saas-primary {
+    background-color: var(--primary);
+    color: white;
+    font-weight: 500;
+    padding: 0.625rem 1.25rem;
+    border-radius: var(--radius-md);
+    border: none;
+    transition: all 0.2s;
+}
+
+.btn-saas-primary:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.btn-saas-outline {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-weight: 500;
+    padding: 0.625rem 1.25rem;
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+}
+
+.btn-saas-outline:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+/* Inputs */
+.form-control {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    padding: 0.625rem 1rem;
+    font-size: 0.95rem;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 3px var(--primary-light);
+    border-color: var(--primary);
+}
+
+/* --- Layout: Admin / Employee Panel --- */
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--bg-sidebar);
+    color: white;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    left: 0;
+    top: 0;
+    z-index: 50;
+    transition: transform 0.3s ease;
+}
+
+.sidebar .brand {
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-nav {
+    padding: 1rem 0.75rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: #94A3B8;
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    margin-bottom: 0.25rem;
+    transition: all 0.2s;
+}
+
+.nav-item:hover, .nav-item.active {
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.nav-item i {
+    width: 24px;
+    margin-right: 0.75rem;
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.topbar {
+    height: var(--header-height);
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Badges */
+.badge-saas {
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 600;
+    border-radius: 999px;
+}
+.badge-present { background: #D1FAE5; color: #065F46; }
+.badge-absent { background: #FEE2E2; color: #991B1B; }
+.badge-half { background: #FEF3C7; color: #92400E; }
+
+/* Landing Page Specific */
+.landing-hero {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}

@@ -28,94 +28,117 @@ if (isset($pdo) && isset($_SESSION['employee_db_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Portal - Attendance System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../assets/css/style.css?v=<?php echo time(); ?>">
 
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Bootstrap (Grid/Utils) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom SaaS Theme -->
+    <link rel="stylesheet" href="../assets/css/saas-theme.css?v=<?php echo time(); ?>">
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse px-0">
-                <a class="sidebar-brand" href="dashboard.php">
-                    <i class="bi bi-person-badge-fill me-2"></i>Employee Portal
+    <div class="app-container">
+        <!-- SaaS Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="bi bi-person-workspace text-success me-2"></i> Employee Portal
+            </div>
+
+            <nav class="sidebar-nav">
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>"
+                    href="dashboard.php">
+                    <i class="bi bi-grid-1x2-fill"></i> Dashboard
                 </a>
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>"
-                                href="dashboard.php">
-                                <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>"
-                                href="profile.php">
-                                <i class="bi bi-person-circle me-2"></i>My Profile
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'education.php' ? 'active' : ''; ?>"
-                                href="education.php">
-                                <i class="bi bi-mortarboard me-2"></i>Education
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'attendance_history.php' ? 'active' : ''; ?>"
-                                href="attendance_history.php">
-                                <i class="bi bi-calendar-check me-2"></i>My Attendance
-                            </a>
-                        </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'leave_request.php' ? 'active' : ''; ?>"
-                                href="leave_request.php">
-                                <i class="bi bi-calendar-minus me-2"></i>Leaves
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'tasks.php' ? 'active' : ''; ?>"
-                                href="tasks.php">
-                                <i class="bi bi-list-check me-2"></i>My Tasks
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'team.php' ? 'active' : ''; ?>"
-                                href="team.php">
-                                <i class="bi bi-people me-2"></i>My Team
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'email.php' ? 'active' : ''; ?>"
-                                href="email.php">
-                                <i class="bi bi-envelope me-2"></i>Email System
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'chat.php' ? 'active' : ''; ?>"
-                                href="chat.php">
-                                <i class="bi bi-chat-dots me-2"></i>Messages
-                            </a>
-                        </li>
+                <div class="text-uppercase text-muted small fw-bold mt-3 mb-2 px-3" style="font-size: 0.75rem;">My
+                    Workspace</div>
 
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'notifications.php' ? 'active' : ''; ?>"
-                                href="notifications.php">
-                                <i class="bi bi-bell me-2"></i>Notifications
-                                <span id="notif-badge" class="badge bg-danger rounded-pill ms-2"
-                                    style="<?php echo ($notif_count > 0) ? '' : 'display:none;'; ?>"><?php echo $notif_count; ?></span>
-                            </a>
-                        </li>
-                        <li class="nav-item mt-4">
-                            <a class="nav-link text-danger" href="logout.php">
-                                <i class="bi bi-box-arrow-right me-2"></i>Logout
-                            </a>
-                        </li>
-                    </ul>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>"
+                    href="profile.php">
+                    <i class="bi bi-person-circle"></i> My Profile
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'education.php' ? 'active' : ''; ?>"
+                    href="education.php">
+                    <i class="bi bi-mortarboard-fill"></i> Education
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'attendance_history.php' ? 'active' : ''; ?>"
+                    href="attendance_history.php">
+                    <i class="bi bi-calendar2-check-fill"></i> Attendance
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'leave_request.php' ? 'active' : ''; ?>"
+                    href="leave_request.php">
+                    <i class="bi bi-send-fill"></i> Leave Requests
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'holidays.php' ? 'active' : ''; ?>"
+                    href="holidays.php">
+                    <i class="bi bi-calendar3"></i> Calendar
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'tasks.php' ? 'active' : ''; ?>"
+                    href="tasks.php">
+                    <i class="bi bi-list-task"></i> My Tasks
+                </a>
+
+                <div class="text-uppercase text-muted small fw-bold mt-3 mb-2 px-3" style="font-size: 0.75rem;">
+                    Collaboration</div>
+
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'team.php' ? 'active' : ''; ?>"
+                    href="team.php">
+                    <i class="bi bi-people-fill"></i> My Team
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'chat.php' ? 'active' : ''; ?>"
+                    href="chat.php">
+                    <i class="bi bi-chat-left-dots-fill"></i> Messages
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'email.php' ? 'active' : ''; ?>"
+                    href="email.php">
+                    <i class="bi bi-envelope-at-fill"></i> Email
+                </a>
+
+                <div class="text-uppercase text-muted small fw-bold mt-3 mb-2 px-3" style="font-size: 0.75rem;">System
                 </div>
-            </nav>
 
-            <!-- Main Content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'notifications.php' ? 'active' : ''; ?>"
+                    href="notifications.php">
+                    <i class="bi bi-bell-fill"></i> Notifications
+                    <span id="notif-badge" class="badge bg-danger rounded-pill ms-auto"
+                        style="<?php echo ($notif_count > 0) ? '' : 'display:none;'; ?>"><?php echo $notif_count; ?></span>
+                </a>
+
+                <a class="nav-item text-danger mt-3" href="logout.php">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="d-flex align-items-center">
+                    <h5 class="mb-0 fw-semibold text-dark">
+                        <?php
+                        $page = basename($_SERVER['PHP_SELF']);
+                        echo ($page == 'dashboard.php') ? 'Dashboard' : 'Employee Portal';
+                        ?>
+                    </h5>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                            style="width: 32px; height: 32px; font-size: 0.8rem;">
+                            EM
+                        </div>
+                        <span class="small fw-medium d-none d-md-block">Employee</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content Padding -->
+            <div class="p-4">

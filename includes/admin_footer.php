@@ -1,6 +1,6 @@
-</main>
-</div>
-</div>
+</div> <!-- End Page Content Padding -->
+</div> <!-- End Main Content -->
+</div> <!-- End App Container -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Use a simple script to mark the active link if PHP match failed or for client-side interactivity

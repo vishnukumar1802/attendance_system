@@ -15,154 +15,153 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Attendance System</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Bootstrap (Grid/Utils) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../assets/css/style.css?v=<?php echo time(); ?>">
+
+    <!-- Custom SaaS Theme -->
+    <link rel="stylesheet" href="../assets/css/saas-theme.css?v=<?php echo time(); ?>">
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse px-0">
-                <a class="sidebar-brand" href="dashboard.php">
-                    <i class="bi bi-shield-lock-fill me-2"></i>Admin Panel
+    <div class="app-container">
+        <!-- SaaS Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="bi bi-stars text-primary me-2"></i> HR System
+            </div>
+
+            <nav class="sidebar-nav">
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>"
+                    href="dashboard.php">
+                    <i class="bi bi-grid-1x2-fill"></i> Dashboard
                 </a>
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>"
-                                href="dashboard.php">
-                                <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'employees.php' ? 'active' : ''; ?>"
-                                href="employees.php">
-                                <i class="bi bi-people me-2"></i>Employees
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'employee_profiles.php' ? 'active' : ''; ?>"
-                                href="employee_profiles.php">
-                                <i class="bi bi-person-lines-fill me-2"></i>Profiles
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'temp_access.php' ? 'active' : ''; ?>"
-                                href="temp_access.php">
-                                <i class="bi bi-unlock me-2"></i>Access Reqs
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'attendance.php' ? 'active' : ''; ?>"
-                                href="attendance.php">
-                                <i class="bi bi-calendar-check me-2"></i>Attendance
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'bulk_attendance.php' ? 'active' : ''; ?>"
-                                href="bulk_attendance.php">
-                                <i class="bi bi-calendar-range me-2"></i>Bulk Attendance
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'missed_checkouts.php' ? 'active' : ''; ?>"
-                                href="missed_checkouts.php">
-                                <i class="bi bi-exclamation-triangle me-2"></i>Missed Checkout
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'leaves.php' ? 'active' : ''; ?>"
-                                href="leaves.php">
-                                <i class="bi bi-envelope-open me-2"></i>Leaves
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'tasks.php' ? 'active' : ''; ?>"
-                                href="tasks.php">
-                                <i class="bi bi-list-check me-2"></i>Tasks
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'teams.php' ? 'active' : ''; ?>"
-                                href="teams.php">
-                                <i class="bi bi-people-fill me-2"></i>Teams
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'salary.php' ? 'active' : ''; ?>"
-                                href="salary.php">
-                                <i class="bi bi-cash-stack me-2"></i>Salary & Reports
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_holidays.php' ? 'active' : ''; ?>"
-                                href="manage_holidays.php">
-                                <i class="bi bi-calendar-event me-2"></i>Holidays
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>"
-                                href="settings.php">
-                                <i class="bi bi-gear me-2"></i>Settings
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'chat.php' ? 'active' : ''; ?>"
-                                href="chat.php">
-                                <i class="bi bi-chat-dots me-2"></i>Messages
-                            </a>
-                        </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'email.php' ? 'active' : ''; ?>"
-                                href="email.php">
-                                <i class="bi bi-envelope me-2"></i>Email System
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="adminNotifLink">
-                                <i class="bi bi-bell me-2"></i>Notifications
-                                <span id="admin-notif-badge" class="badge bg-danger rounded-pill ms-2"
-                                    style="display:none;">0</span>
-                            </a>
-                        </li>
-                        <?php if (isset($_SESSION['admin_role']) && $_SESSION['admin_role'] == 'super_admin'): ?>
-                            <li class="nav-item">
-                                <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_admins.php' ? 'active' : ''; ?>"
-                                    href="manage_admins.php">
-                                    <i class="bi bi-person-badge me-2"></i>Manage Admins
-                                </a>
-                            </li>
-                        <?php endif; ?>
-                        <li class="nav-item mt-4">
-                            <a class="nav-link text-danger" href="logout.php">
-                                <i class="bi bi-box-arrow-right me-2"></i>Logout
-                            </a>
-                        </li>
-                    </ul>
+                <div class="text-uppercase text-muted small fw-bold mt-3 mb-2 px-3" style="font-size: 0.75rem;">People
                 </div>
-            </nav>
 
-            <!-- Main Content -->
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'employees.php' ? 'active' : ''; ?>"
+                    href="employees.php">
+                    <i class="bi bi-people-fill"></i> Employees
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'teams.php' ? 'active' : ''; ?>"
+                    href="teams.php">
+                    <i class="bi bi-microsoft-teams"></i> Teams
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'temp_access.php' ? 'active' : ''; ?>"
+                    href="temp_access.php">
+                    <i class="bi bi-unlock-fill"></i> Access Requests
+                </a>
+
+                <div class="text-uppercase text-muted small fw-bold mt-3 mb-2 px-3" style="font-size: 0.75rem;">
+                    Management</div>
+
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'attendance.php' ? 'active' : ''; ?>"
+                    href="attendance.php">
+                    <i class="bi bi-calendar-check-fill"></i> Attendance
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'leaves.php' ? 'active' : ''; ?>"
+                    href="leaves.php">
+                    <i class="bi bi-envelope-paper-fill"></i> Leaves
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'tasks.php' ? 'active' : ''; ?>"
+                    href="tasks.php">
+                    <i class="bi bi-kanban-fill"></i> Tasks
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'salary.php' ? 'active' : ''; ?>"
+                    href="salary.php">
+                    <i class="bi bi-currency-dollar"></i> Payroll
+                </a>
+
+                <div class="text-uppercase text-muted small fw-bold mt-3 mb-2 px-3" style="font-size: 0.75rem;">
+                    Communication</div>
+
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'chat.php' ? 'active' : ''; ?>"
+                    href="chat.php">
+                    <i class="bi bi-chat-text-fill"></i> Chat
+                </a>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'email.php' ? 'active' : ''; ?>"
+                    href="email.php">
+                    <i class="bi bi-envelope-at-fill"></i> Email
+                </a>
+
+                <div class="text-uppercase text-muted small fw-bold mt-3 mb-2 px-3" style="font-size: 0.75rem;">System
+                </div>
+
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'manage_holidays.php' ? 'active' : ''; ?>"
+                    href="manage_holidays.php">
+                    <i class="bi bi-calendar3"></i> Holidays
+                </a>
+                <?php if (isset($_SESSION['admin_role']) && $_SESSION['admin_role'] == 'super_admin'): ?>
+                    <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'manage_admins.php' ? 'active' : ''; ?>"
+                        href="manage_admins.php">
+                        <i class="bi bi-shield-fill-check"></i> Admins
+                    </a>
+                <?php endif; ?>
+                <a class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>"
+                    href="settings.php">
+                    <i class="bi bi-gear-fill"></i> Settings
+                </a>
+
+                <a class="nav-item text-danger mt-3" href="logout.php">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="d-flex align-items-center">
+                    <h5 class="mb-0 fw-semibold text-dark">
+                        <?php
+                        $page = basename($_SERVER['PHP_SELF']);
+                        $title_map = [
+                            'dashboard.php' => 'Dashboard',
+                            'employees.php' => 'Employee Management',
+                            'attendance.php' => 'Attendance Overview',
+                            'chat.php' => 'Messages'
+                        ];
+                        echo isset($title_map[$page]) ? $title_map[$page] : 'Admin Portal';
+                        ?>
+                    </h5>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="position-relative cursor-pointer" id="adminNotifLink">
+                        <i class="bi bi-bell fs-5 text-muted"></i>
+                        <span id="admin-notif-badge"
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="display:none; font-size: 0.6rem;">0</span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                            style="width: 32px; height: 32px; font-size: 0.8rem;">
+                            AD
+                        </div>
+                        <span class="small fw-medium d-none d-md-block">Admin User</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Notification Logic Kept Intact -->
             <?php
-            // Admin Notification Logic
             $admin_notif_count = 0;
             if (isset($pdo) && isset($_SESSION['admin_id'])) {
-                // 1. General Notifications
-                $n_stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = 0 AND is_read = 0"); // 0 for Admin
+                $n_stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = 0 AND is_read = 0");
                 $n_stmt->execute();
                 $admin_notif_count += $n_stmt->fetchColumn();
-
-                // 2. Unread Messages (DISABLED)
-                // $m_stmt = $pdo->prepare("SELECT COUNT(*) FROM messages WHERE receiver_id = ? AND sender_role = 'employee' AND is_read = 0");
-                // $m_stmt->execute([$_SESSION['admin_id']]);
-                // $admin_notif_count += $m_stmt->fetchColumn();
             }
             ?>
             <script>
-                // Update Admin Badge
                 document.addEventListener('DOMContentLoaded', function () {
                     const badge = document.getElementById('admin-notif-badge');
                     const count = <?php echo $admin_notif_count; ?>;
@@ -172,4 +171,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     }
                 });
             </script>
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+
+            <!-- Page Content Padding -->
+            <div class="p-4">
